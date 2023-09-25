@@ -1,57 +1,63 @@
+"use client";
+
 import { NewsCard } from ".";
 import styles from "./newsfeed.module.css";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { getNews } from "@/redux/thunks/getNews";
+import { selectNews } from "@/redux/reducers/newsfeedSlice";
+import { useEffect, useState } from "react";
+import { NewsItem } from "@/redux/thunks/getNews/types";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export default function Newsfeed() {
-  const news: NewsItem[] = [
-    {
-      heading:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus faucibus urna ac ipsum convallis, vitae tincidunt nisi lacinia. Aenean dignissim felis quis vestibulum pellentesque. Ut id leo euismod, suscipit augue id, pulvinar est. Praesent quis enim eu lorem fermentum vulputate. Vestibulum in lectus a nulla ultricies rhoncus vitae et turpis. Ut iaculis scelerisque quam, in dignissim erat blandit ut. Nunc nisi nunc, consequat in blandit et, blandit sit amet lorem. Etiam vulputate eros arcu, nec elementum est pulvinar a. Aliquam quis enim tellus. Maecenas id rhoncus purus. Sed quis aliquet tortor, at blandit nulla.",
-      date: "24 July 2022, 10:06:03 AM",
-      picURL:
-        "https://kartinkof.club/uploads/posts/2022-04/1649590989_2-kartinkof-club-p-ugarnie-kartinki-kartinka-ti-super-2.jpg",
-      id: "1",
-    },
-    {
-      heading: "Новост22ь новость",
-      date: "24 July 2022, 10:06:03 AM",
-      picURL:
-        "https://kartinkof.club/uploads/posts/2022-04/1649590989_2-kartinkof-club-p-ugarnie-kartinki-kartinka-ti-super-2.jpg",
-      id: "2",
-    },
-    {
-      heading: "Новост22ь новость",
-      date: "24 July 2022, 10:06:03 AM",
-      picURL:
-        "https://kartinkof.club/uploads/posts/2022-04/1649590989_2-kartinkof-club-p-ugarnie-kartinki-kartinka-ti-super-2.jpg",
-      id: "3",
-    },
-    {
-      heading: "Новост22ь новость",
-      date: "24 July 2022, 10:06:03 AM",
-      picURL:
-        "https://kartinkof.club/uploads/posts/2022-04/1649590989_2-kartinkof-club-p-ugarnie-kartinki-kartinka-ti-super-2.jpg",
-      id: "4",
-    },
-    {
-      heading: "Новост22ь новость",
-      date: "24 July 2022, 10:06:03 AM",
-      picURL:
-        "https://kartinkof.club/uploads/posts/2022-04/1649590989_2-kartinkof-club-p-ugarnie-kartinki-kartinka-ti-super-2.jpg",
-      id: "5",
-    },
-  ];
+  const dispatch = useAppDispatch();
+  const searchFormState = useAppSelector((state) => state.searchFrom);
+  const [page, setPage] = useState(1);
+  const [news, setNews] = useState(useAppSelector(selectNews));
 
-  const renderNews = news?.map((item) => {
+  const loadNews = async () => {
+    const newRecords = await dispatch(
+      getNews({
+        query: searchFormState.query,
+        sortBy: searchFormState.sortBy,
+        itemsOnPage: searchFormState.itemsOnPage,
+        page: page,
+      })
+    );
+    setPage((prevPage) => prevPage + 1);
+    const list = newRecords.payload;
+    const newFeed = [...news, ...list];
+    setNews(newFeed);
+  };
+
+  useEffect(() => {
+    loadNews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, searchFormState]);
+
+  const renderNews = news?.map((item: NewsItem) => {
     return (
       <NewsCard
         key={item.id}
-        heading={item.heading}
-        date={item.date}
-        picURL={item.picURL}
+        heading={item.fields.headline}
+        date={item.webPublicationDate}
+        picURL={
+          item.fields.thumbnail ? item.fields.thumbnail : "/placeholder.png"
+        }
         id={item.id}
       />
     );
   });
 
-  return <main className={styles.main}>{renderNews}</main>;
+  return (
+    <InfiniteScroll
+      next={loadNews}
+      hasMore={true}
+      loader={<div></div>}
+      dataLength={news.length}
+      scrollThreshold={1}
+    >
+      <main className={styles.main}>{renderNews}</main>
+    </InfiniteScroll>
+  );
 }

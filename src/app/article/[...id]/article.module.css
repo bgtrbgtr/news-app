@@ -1,0 +1,82 @@
+.article {
+  position: relative;
+}
+
+.article * {
+  margin: 0;
+  padding: 0;
+}
+
+.headline {
+  margin: 0;
+}
+
+.subheading {
+  margin: 10 0;
+}
+
+.article p {
+  margin: 10px 0;
+}
+
+.article figure img {
+  max-width: 300px;
+  max-height: 300px;
+  object-fit: cover;
+  margin: 0;
+}
+
+.article figure {
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+.article figure figcaption {
+  font-size: 10px;
+}
+
+.article list {
+  list-style-type: circle;
+}
+
+.article blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+
+.article blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+
+.article blockquote p {
+  display: inline;
+}
+
+.article time {
+  display: none;
+}
+
+.info_block {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.link {
+  text-decoration: none;
+  color: #9BC5B3;
+}
+
+.link:hover {
+  color: #50DFA3;
+}
